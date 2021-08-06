@@ -1,3 +1,4 @@
+"""Sample main.py to run as python script"""
 import cv2
 from train import ClassifierModel
 from inference.inferPytorch import InferPytorch

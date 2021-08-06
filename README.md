@@ -29,7 +29,7 @@ It also contains an option to convert model to onnx and TensorRT. There are refe
 
 ### Example
 
-`Examples` folder contains a sample notebook to run `cifar10` dataset end to end.
+`Notebooks` folder contains a sample notebook to run `cifar10` dataset end to end.
 
 -----
 
