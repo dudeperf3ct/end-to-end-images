@@ -1,3 +1,4 @@
+# Adapted from: https://github.com/PRBonn/bonnetal/blob/master/train/tasks/segmentation/modules/userTensorRT.py
 import time
 import cv2
 import json

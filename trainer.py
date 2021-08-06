@@ -5,12 +5,16 @@ import numpy as np
 from tqdm import tqdm
 import wandb
 import torch
+try:
+    from torch.cuda.amp import autocast, GradScaler
+except AttributeError:
+    raise AttributeError("AMP training is used as default")
 from torch.cuda.amp import autocast, GradScaler
 
 
 # cool tricks: https://efficientdl.com/faster-deep-learning-in-pytorch-a-guide/
 class Trainer:
-    """Trainer with training and validation loops with fp16 precision"""
+    """Trainer with training and validation loops with amp precision"""
     def __init__(self, model, dataloaders: dict, num_classes: int, criterion,
                  optimizer, scheduler, num_epochs: int, device, use_wandb: bool):
         """

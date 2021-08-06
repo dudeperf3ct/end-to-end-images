@@ -1,3 +1,4 @@
+# Adapted from: https://github.com/PRBonn/bonnetal/blob/master/train/common/trtCalibINT8.py
 import numpy as np
 import cv2
 import os

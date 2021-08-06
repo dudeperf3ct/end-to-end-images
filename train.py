@@ -396,10 +396,10 @@ class ClassifierModel:
         """
 
         Args:
-            val_loader:
-            cws:
-            vis_prediction:
-            is_test:
+            val_loader: validation dataloader or test dataloader
+            cws: numpy array of class weights corresponding to each class
+            vis_prediction: if True, plot a sample of 10x2 grid with prediction and labels
+            is_test: if True, log metrics with prefix `test` in wandb.ai else use prefix of `val`
 
         Returns:
 

@@ -7,9 +7,7 @@ from torch.utils.data import Dataset
 class ImageClassifierDataset(Dataset):
     """Image Classifier dataset"""
 
-    def __init__(
-            self, img_paths: list, lbls: list = None, root_dir: str = None, transform=None
-    ):
+    def __init__(self, img_paths: list, lbls: list = None, root_dir: str = None, transform=None):
         """
         Args:
             img_paths (list) : list containing path of images

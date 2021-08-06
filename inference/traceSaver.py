@@ -1,3 +1,4 @@
+# Adapted from: https://github.com/PRBonn/bonnetal/blob/master/train/tasks/segmentation/modules/traceSaver.py
 import os
 import errno
 import onnx
