@@ -1,0 +1,33 @@
+
+
+{
+    "seed": 42,
+    "num_workers": 2,
+
+    "learning_rate": 1e-3,
+    "batch_size": 2048,
+    "epochs": 15,
+    "test_split_ratio": 0.1,
+    "num_classes": 10,
+    "folds": 4,
+    "embed_size": 256,
+
+    "input_channels": 3,
+    "width": 32,
+    "height": 32,
+    "means": [0.485, 0.456, 0.406],
+    "stds": [0.229, 0.224, 0.225],
+
+    "train_root_dir": "datasets/cifar-10/train",
+    "save_model_path": "experiments/resnet18/models/resnet18_finetune.pth",
+    "trained_model_path": null,
+
+    "model_name": "resnet18",
+    "optimizer": "AdamW",
+    "scheduler": "OneCycleLR",
+    "feature_extract": true,
+    "use_pretrain" : true,
+    "finetune_layer": 61,
+    "use_wandb": true,
+    "convert_onnx": true
+}
