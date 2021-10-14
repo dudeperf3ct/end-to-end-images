@@ -1,5 +1,4 @@
 """General utility functions"""
-
 import os
 import json
 import logging
@@ -11,7 +10,6 @@ from PIL import Image
 import cv2
 import seaborn as sns
 import matplotlib.pyplot as plt
-
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torch
@@ -65,7 +63,6 @@ def datasets_to_df(ds_path: str):
         raise FileNotFoundError(f"Dataset directory not found: {ds_path}")
     raise NotImplementedError("Implement this method")
     # return pd.DataFrame(data, columns=["file", "label"]) --> return same dataframe to be consistent
-
 
 def plot_hist(history: dict):
     """
@@ -277,4 +274,3 @@ def set_global_seeds(seed: int):
     torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
     np.random.seed(seed)  # Numpy module.
     random.seed(seed)  # Python random module.
-    torch.manual_seed(seed)

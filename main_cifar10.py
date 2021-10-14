@@ -10,10 +10,10 @@ do_trt_inference = False
 if __name__ == '__main__':
     ################################
     # Model training and evaluation
-    model_dir = "path/to/Param.json"
-    experiment = "name-of-experiment"
+    model_dir = "experiments/resnet18"
+    experiment = "resnet18"
     model = ClassifierModel(model_dir, experiment)
-    train_df = model.prepare_df("path/to/train/csv")
+    train_df = model.prepare_df("datasets/cifar-10/trainLabels.csv")
     # perform k-fold training
     if model.folds > 1:
         model.train_k_folds(train_df)
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     ################################
     # Model inference
     infer_pytorch = InferPytorch(model_dir)
-    im = cv2.imread("path/to/sample/image")
+    im = cv2.imread("datasets/cifar-10/test/1.png")
     infer_pytorch.infer(im)
     ################################
     # Benchmark inference time
@@ -37,4 +37,4 @@ if __name__ == '__main__':
         # run only this part in Docker.trt
         from inference.inferTensorRT import InferTensorRT
         infer_trt = InferTensorRT(model_dir, "fp16")
-        infer_trt.infer_img("/path/to/sample/image", 3)
+        infer_trt.infer_img("datasets/cifar-10/test/1.png", 3)

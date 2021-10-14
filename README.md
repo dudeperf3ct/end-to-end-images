@@ -6,7 +6,10 @@
 - [x] Example notebook
 - [ ] C++ Inference (Future release)
 
+# Deployment
 
+- [x] FastAPI (`fastapi` branch) [can be easily converted to Herouko deployment]
+- [x] Triton Inference Server (`triton` branch)
 
 ### What is this?
 
@@ -31,9 +34,16 @@ It also contains an option to convert model to onnx and TensorRT. There are refe
 
 `Notebooks` folder contains a sample notebook to run `cifar10` dataset end to end.
 
+`Docker` container
+ 
+```bash
+sudo docker build -t e2e .
+sudo chmod +x run_container.sh
+./run_container.sh
+python3 main_cifar10.py
+```
+
+To run TensorRT Inference, build it's corresponding docker and set `do_trt_inference` to `True` in `main_cifar10.py`.
+
 -----
-
-#### Modification to support regression
-
-We can take this task further by support regression task along with classification by replacing classification based metrics, losses and some helper code with regression related code. (We can add support for a simple switch if required?)
 

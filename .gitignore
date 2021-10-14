@@ -134,3 +134,4 @@ datasets/
 .idea/
 **/.ipynb_checkpoints
 wandb/
+.vscode

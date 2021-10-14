@@ -7,8 +7,8 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import class_weight
 import json
+import warnings
 from pprint import pprint
-
 import torch
 import torch.nn as nn
 import wandb
@@ -22,7 +22,6 @@ from evaluate import test_model
 from utils import get_train_transforms, get_val_transforms, set_global_seeds, colorstr, Params, datasets_to_df, \
     set_logger
 
-import warnings
 
 warnings.filterwarnings('ignore')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -386,10 +385,9 @@ class ClassifierModel:
             tracer = TraceSaver(self.save_model_path, parent_model_dir, (self.height, self.width, self.input_channels))
             tracer.export_onnx(debug=False)
             validate_onnx = ValidateOnnx(self.model_dir)
-            img_paths = train_df['file'].sample(5).values
             for tol in [1e-1, 1e-2, 1e-3]:
                 logging.info(f"Performing calibration for rtol={tol}...")
-                validate_onnx.calibrate(img_paths, tol, self.train_root_dir)
+                validate_onnx.calibrate((self.input_channels, self.height, self.width), tol, self.train_root_dir)
         self.evaluate(val_loader, cws, True, False)
 
     def evaluate(self, val_loader, cws, vis_prediction: bool = True, is_test: bool = False):
@@ -422,6 +420,8 @@ class ClassifierModel:
         Returns:
             best_accs (list) : A list of best val accuracy across all folds
         """
+        if self.folds < 2:
+            raise RuntimeError("Number of folds should be greater than 1")
         train_df["kfold"] = -1
         # shuffle dataset
         train_df = train_df.sample(frac=1).reset_index(drop=True)

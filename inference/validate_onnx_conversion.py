@@ -36,38 +36,25 @@ class ValidateOnnx:
     def _to_numpy(tensor):
         return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
-    def calibrate(self, img_paths: list, tol: float, root_dir: str = None):
+    def calibrate(self, inp_shape: list, tol: float):
         """Perform calibration for pytorch and onnx model for given relative threshold
 
         Args:
-            img_paths: List of some sample image paths to calibrate the prediction
+            inp_shape: Tuple of input shape (CHW)
             tol: Relative tolerance to compare the onnx and pytorch predictions
-            root_dir: Root directory to load images if the paths are not absolute
 
         Returns: None
-        Prints the assertion output if there's mismatch in prediction of pytorch and onnx model for given threshold
+
+        Raises AssertionError: 
+            if there's mismatch in prediction of pytorch and onnx model for given threshold
 
         """
         ort_session = onnxruntime.InferenceSession(self.onnx_path)
         model = torch.load(self.pytorch_path).to(device)
         model.eval()
-        for img_path in img_paths:
-            if root_dir is not None:
-                bgr_img = cv2.imread(os.path.join(root_dir, img_path))
-            else:
-                bgr_img = cv2.imread(img_path)
-            bgr_img = cv2.resize(bgr_img, (self.data_w, self.data_h), interpolation=cv2.INTER_LINEAR)
-            # check if network is RGB or mono
-            if self.data_d == 3:
-                # get make rgb
-                rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
-            elif self.data_d == 1:
-                # get grayscale
-                rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
-            else:
-                raise NotImplementedError("Network has to have 1 or 3 channels. Anything else must be implemented.")
+        for _ in range(8):
             # to tensor
-            rgb_tensor = torch.from_numpy(rgb_img)
+            rgb_tensor = torch.random.randn((1,)+(inp_shape))
             # permute and normalize
             rgb_tensor = (rgb_tensor.float() / 255.0 - self.means) / self.stds
             rgb_tensor = rgb_tensor.permute(2, 0, 1)
@@ -83,9 +70,9 @@ class ValidateOnnx:
             try:
                 # compare ONNX Runtime and PyTorch results
                 np.testing.assert_allclose(self._to_numpy(torch_out), ort_outs[0], rtol=tol, atol=1e-05)
-                logging.info(f"Passed {img_path} with relative tol={tol}")
+                logging.info(f"Test Passed with relative tol={tol}")
                 logging.info('-'*15)
             except AssertionError as e:
-                logging.info(f"Failed {img_path} with relative tol={tol}")
+                logging.info(f"Test Failed with relative tol={tol}")
                 logging.info(e)
                 logging.info('-'*30)
