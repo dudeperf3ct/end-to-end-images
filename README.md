@@ -8,8 +8,8 @@
 
 # Deployment
 
-- [x] FastAPI (`fastapi` branch) [can be easily converted to Herouko deployment]
-- [x] Triton Inference Server (`triton` branch)
+- [x] [FastAPI](https://github.com/dudeperf3ct/end-to-end-images/tree/fastapi) (`fastapi` branch) [+ Heroku deployment]
+- [x] [Triton Inference Server](https://github.com/dudeperf3ct/end-to-end-images/tree/triton) (`triton` branch)
 
 ### What is this?
 
