@@ -2,7 +2,6 @@
     "seed": 42,
     "num_workers": 2,
 
-    "learning_rate": 1e-3,
     "batch_size": 256,
     "epochs": 15,
     "test_split_ratio": 0.1,
@@ -15,17 +14,36 @@
     "height": 32,
     "means": [0.485, 0.456, 0.406],
     "stds": [0.229, 0.224, 0.225],
+    "auto_augment_policy" : "ta-wide",
+    "random_erase" : 0.1,
+    "transform_type": "pt",
 
+    "model_name": "resnet18",
     "train_root_dir": "datasets/cifar-10/train",
     "save_model_path": "experiments/resnet18/models/resnet18_finetune.pth",
     "trained_model_path": null,
-
-    "model_name": "resnet18",
-    "optimizer": "AdamW",
-    "scheduler": "OneCycleLR",
     "feature_extract": true,
     "use_pretrain" : true,
     "finetune_layer": 61,
+
+    "optimizer": "sgd",
+    "momentum": 0.9,
+
+    "weight_decay" : 2e-05,
+    "norm_weight_decay": 0.0,
+    "mixup_alpha" : 0.2,
+    "cutmix_alpha" : 0.1,
+    "label_smoothing" : 0.1,
+
+    "learning_rate": 0.5,
+    "scheduler": "cosineannealinglr",
+    "lr_step_size": 30,
+    "lr_gamma": null,
+
+    "lr_warmup_method": "linear",
+    "lr_warmup_decay": 0.01,
+    "lr_warmup_epochs": 5,
+
     "use_wandb": true,
     "convert_onnx": true
 }

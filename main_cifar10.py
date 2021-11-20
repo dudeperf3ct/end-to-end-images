@@ -7,7 +7,7 @@ from benchmark import InferenceBenchmarkRunner
 
 do_trt_inference = False
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ################################
     # Model training and evaluation
     model_dir = "experiments/resnet18"
@@ -36,5 +36,6 @@ if __name__ == '__main__':
     if do_trt_inference:
         # run only this part in Docker.trt
         from inference.inferTensorRT import InferTensorRT
+
         infer_trt = InferTensorRT(model_dir, "fp16")
         infer_trt.infer_img("datasets/cifar-10/test/1.png", 3)
