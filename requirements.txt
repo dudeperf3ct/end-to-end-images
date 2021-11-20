@@ -11,3 +11,4 @@ pillow==8.3.2
 onnx==1.10.1
 onnxruntime==1.8.1
 tqdm==4.61.2
+pre-commit

@@ -75,7 +75,7 @@ def test_model(
             # convert output probabilities to predicted class
             _, pred = torch.max(output, 1)
             # compare predictions to true label
-            correct = np.squeeze(pred.eq(target.data.view_as(pred)))
+            correct = pred.eq(target.data.view_as(pred))
             # calculate test accuracy for each object class
             for t, p in zip(target.view(-1), pred.view(-1)):
                 confusion_matrix[t.long(), p.long()] += 1
