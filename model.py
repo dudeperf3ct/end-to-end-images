@@ -5,7 +5,9 @@ import torch.nn as nn
 import timm
 
 
-def set_parameter_requires_grad(model, feature_extracting: bool, num_ft_layers: int):
+def set_parameter_requires_grad(
+    model, feature_extracting: bool, num_ft_layers: int
+):
     """
     Freeze the weights of the model is feature_extracting=True
     Fine tune layers >= num_ft_layers
@@ -43,20 +45,20 @@ def _create_classifier(num_ftrs: int, embedding_size: int, num_classes: int):
     """
     head = nn.Sequential(
         nn.Linear(num_ftrs, embedding_size),
-        nn.Linear(embedding_size, num_classes)
+        nn.Linear(embedding_size, num_classes),
     )
     return head
 
 
 def build_models(
-        model_name: str,
-        num_classes: int,
-        in_channels: int,
-        embedding_size: int,
-        feature_extract: bool = True,
-        use_pretrained: bool = True,
-        num_ft_layers: int = -1,
-        bst_model_weights=None
+    model_name: str,
+    num_classes: int,
+    in_channels: int,
+    embedding_size: int,
+    feature_extract: bool = True,
+    use_pretrained: bool = True,
+    num_ft_layers: int = -1,
+    bst_model_weights=None,
 ):
     """
     Build various architectures to either train from scratch, finetune or as feature extractor.
@@ -82,15 +84,21 @@ def build_models(
     supported_models = timm.list_models(pretrained=use_pretrained)
     model = None
     if model_name in supported_models:
-        model = timm.create_model(model_name, pretrained=use_pretrained, in_chans=in_channels)
+        model = timm.create_model(
+            model_name, pretrained=use_pretrained, in_chans=in_channels
+        )
         set_parameter_requires_grad(model, feature_extract, num_ft_layers)
         # check if last layer in timm models is either classifier or fc
         try:
             num_ftrs = model.classifier.in_features
-            model.classifier = _create_classifier(num_ftrs, embedding_size, num_classes)
-        except AttributeError as err:
+            model.classifier = _create_classifier(
+                num_ftrs, embedding_size, num_classes
+            )
+        except AttributeError:
             num_ftrs = model.fc.in_features
-            model.fc = _create_classifier(num_ftrs, embedding_size, num_classes)
+            model.fc = _create_classifier(
+                num_ftrs, embedding_size, num_classes
+            )
     else:
         print("Invalid model name, exiting...")
         exit()

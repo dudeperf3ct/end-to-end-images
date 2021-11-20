@@ -35,7 +35,7 @@ It also contains an option to convert model to onnx and TensorRT. There are refe
 `Notebooks` folder contains a sample notebook to run `cifar10` dataset end to end.
 
 `Docker` container
- 
+
 ```bash
 sudo docker build -t e2e .
 sudo chmod +x run_container.sh
@@ -46,4 +46,3 @@ python3 main_cifar10.py
 To run TensorRT Inference, build it's corresponding docker and set `do_trt_inference` to `True` in `main_cifar10.py`.
 
 -----
-
