@@ -10,17 +10,17 @@ from utils import plot_cm, plot_predictions, colorstr
 
 
 def test_model(
-        model_path: str,
-        test_loader,
-        criterion,
-        num_classes: int,
-        classes: list,
-        device,
-        use_wandb: bool,
-        vis_prediction: bool,
-        means: list,
-        stds: list,
-        is_test: bool
+    model_path: str,
+    test_loader,
+    criterion,
+    num_classes: int,
+    classes: list,
+    device,
+    use_wandb: bool,
+    vis_prediction: bool,
+    means: list,
+    stds: list,
+    is_test: bool,
 ):
     """
     Evaluate trained model
@@ -52,20 +52,24 @@ def test_model(
     model = torch.load(model_path)
     model.eval()
     with torch.no_grad():
-        stream = tqdm(test_loader, total=len(test_loader), position=0, leave=True)
+        stream = tqdm(
+            test_loader, total=len(test_loader), position=0, leave=True
+        )
         for _, (data, target) in enumerate(stream):
             data = data.to(device, non_blocking=True)
             target = target.to(device, non_blocking=True)
             # forward pass: compute predicted outputs by passing inputs to the model
             output = model(data)
             if num_classes <= 2:
-                onehot_labels = torch.nn.functional.one_hot(target, num_classes)
+                onehot_labels = torch.nn.functional.one_hot(
+                    target, num_classes
+                )
                 onehot_labels = onehot_labels.type_as(output)
                 loss = criterion(output, onehot_labels)
             else:
                 target = target.long()
                 loss = criterion(output, target)
-            stream.set_description('test_loss: {:.2f}'.format(loss.item()))
+            stream.set_description("test_loss: {:.2f}".format(loss.item()))
             # update test loss
             running_test_loss += loss.item() * data.size(0)
             # convert output probabilities to predicted class
@@ -83,7 +87,9 @@ def test_model(
                 example_images.append(
                     wandb.Image(
                         data[0],
-                        caption="Pred: {} Truth: {}".format(classes[pred[0].item()], classes[target[0].item()])
+                        caption="Pred: {} Truth: {}".format(
+                            classes[pred[0].item()], classes[target[0].item()]
+                        ),
                     )
                 )
             all_pred.append(pred.tolist())
@@ -97,21 +103,35 @@ def test_model(
         if class_total[i] > 0:
             print(
                 "Test Accuracy of %5s: %.2f%% (%2d/%2d)"
-                % (str(i), 100 * class_correct[i] / class_total[i], np.sum(class_correct[i]), np.sum(class_total[i]))
+                % (
+                    str(i),
+                    100 * class_correct[i] / class_total[i],
+                    np.sum(class_correct[i]),
+                    np.sum(class_total[i]),
+                )
             )
         else:
-            print("Test Accuracy of %5s: N/A (no training examples)" % (classes[i]))
+            print(
+                "Test Accuracy of %5s: N/A (no training examples)"
+                % (classes[i])
+            )
 
     print(
-        "\n", colorstr("Test Accuracy (Overall):"), " %.2f%% (%2d/%2d)"
-        % (100.0 * np.sum(class_correct) / np.sum(class_total), np.sum(class_correct), np.sum(class_total))
+        "\n",
+        colorstr("Test Accuracy (Overall):"),
+        " %.2f%% (%2d/%2d)"
+        % (
+            100.0 * np.sum(class_correct) / np.sum(class_total),
+            np.sum(class_correct),
+            np.sum(class_total),
+        ),
     )
 
     print("\n", colorstr("Confusion Matrix"), "\n", confusion_matrix.numpy())
 
     flat_lbl = [item for sublist in all_lbl for item in sublist]
     flat_pred = [item for sublist in all_pred for item in sublist]
-    fig = plot_cm(flat_lbl, flat_pred, classes)
+    _ = plot_cm(flat_lbl, flat_pred, classes)
     plt.show()
 
     if use_wandb:
@@ -123,7 +143,7 @@ def test_model(
                         probs=None,
                         y_true=flat_lbl,
                         preds=flat_pred,
-                        class_names=classes
+                        class_names=classes,
                     )
                 }
             )
@@ -131,8 +151,10 @@ def test_model(
             wandb.log(
                 {
                     "Examples_test": example_images,
-                    "test_acccuracy": 100.0 * np.sum(class_correct) / np.sum(class_total),
-                    "test_loss_": test_loss
+                    "test_acccuracy": 100.0
+                    * np.sum(class_correct)
+                    / np.sum(class_total),
+                    "test_loss_": test_loss,
                 }
             )
 
@@ -144,7 +166,7 @@ def test_model(
                         probs=None,
                         y_true=flat_lbl,
                         preds=flat_pred,
-                        class_names=classes
+                        class_names=classes,
                     )
                 }
             )
@@ -153,13 +175,20 @@ def test_model(
             wandb.log(
                 {
                     "Examples_val": example_images,
-                    "val_acccuracy": 100.0 * np.sum(class_correct) / np.sum(class_total),
+                    "val_acccuracy": 100.0
+                    * np.sum(class_correct)
+                    / np.sum(class_total),
                     "val_loss_": test_loss,
                 }
             )
 
-    print("\n", colorstr("Classification Report"), "\n", metrics.classification_report(flat_lbl, flat_pred))
+    print(
+        "\n",
+        colorstr("Classification Report"),
+        "\n",
+        metrics.classification_report(flat_lbl, flat_pred),
+    )
 
     if vis_prediction:
-        fig = plot_predictions(model, test_loader, device, classes, means, stds)
+        _ = plot_predictions(model, test_loader, device, classes, means, stds)
         plt.show()

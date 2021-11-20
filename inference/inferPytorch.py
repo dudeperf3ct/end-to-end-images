@@ -21,11 +21,17 @@ class InferPytorch:
             model_dir:  Path to folder containing `params.json` file
         """
         json_path = os.path.join(model_dir, "params.json")
-        assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
+        assert os.path.isfile(
+            json_path
+        ), "No json configuration file found at {}".format(json_path)
         params = Params(json_path)
 
         # some useful data
-        self.data_h, self.data_w, self.data_d = params.height, params.width, params.input_channels
+        self.data_h, self.data_w, self.data_d = (
+            params.height,
+            params.width,
+            params.input_channels,
+        )
         self.num_classes = params.num_classes
         means, stds = params.means, params.stds
         self.means = np.array(means, dtype=np.float32)
@@ -60,7 +66,9 @@ class InferPytorch:
         original_h, original_w, original_d = bgr_img.shape
 
         # resize
-        bgr_img = cv2.resize(bgr_img, (self.data_w, self.data_h), interpolation=cv2.INTER_LINEAR)
+        bgr_img = cv2.resize(
+            bgr_img, (self.data_w, self.data_h), interpolation=cv2.INTER_LINEAR
+        )
 
         # check if network is RGB or mono
         if self.data_d == 3:
@@ -74,7 +82,9 @@ class InferPytorch:
                 print("Converting to grayscale")
             rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2GRAY)
         else:
-            raise NotImplementedError("Network has to have 1 or 3 channels. Anything else must be implemented.")
+            raise NotImplementedError(
+                "Network has to have 1 or 3 channels. Anything else must be implemented."
+            )
         # to tensor
         rgb_tensor = torch.from_numpy(rgb_img)
         # permute and normalize
@@ -88,15 +98,32 @@ class InferPytorch:
         if torch.cuda.is_available():
             torch.cuda.synchronize()
         argmax = logits[0].argmax(dim=0).cpu().numpy().astype(np.uint8)
-        probs = torch.nn.functional.softmax(logits[0], dim=0).detach().cpu().numpy()
+        probs = (
+            torch.nn.functional.softmax(logits[0], dim=0)
+            .detach()
+            .cpu()
+            .numpy()
+        )
         time_to_infer = time.time() - start
         # time
         if verbose:
             print("Time to infer: {:.3f}s".format(time_to_infer))
-            print("{:15s} | {:15s}".format(colorstr("Predictions"), colorstr("Probabilities")))
+            print(
+                "{:15s} | {:15s}".format(
+                    colorstr("Predictions"), colorstr("Probabilities")
+                )
+            )
             print("-" * 30)
             for i in range(len(probs)):
-                print("{:15s} | {:.2f}%".format(self.class_mapping[str(i)], probs[i] * 100))
-            print("Top-1 Prediction: {} | Probability: {:.2f}%".format(colorstr(self.class_mapping[str(argmax)]),
-                                                                       probs[argmax] * 100))
+                print(
+                    "{:15s} | {:.2f}%".format(
+                        self.class_mapping[str(i)], probs[i] * 100
+                    )
+                )
+            print(
+                "Top-1 Prediction: {} | Probability: {:.2f}%".format(
+                    colorstr(self.class_mapping[str(argmax)]),
+                    probs[argmax] * 100,
+                )
+            )
         return self.class_mapping[str(argmax)]
